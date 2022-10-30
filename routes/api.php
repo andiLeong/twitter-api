@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('tweets',function (){
 
-    return \App\Models\Tweet::with('user:id,avatar,username,name')->latest()->paginate(10);
+    return \App\Models\Tweet::with('user:id,avatar,username,name')->latest('id')->paginate(10);
 });
 
 Route::get('tweets/{tweet}',function (Tweet $tweet){
@@ -39,4 +39,8 @@ Route::post('tweets',function (Request $request){
         'body' => $request->body,
         'user_id' => User::pluck('id')->random()
     ]);
+});
+
+Route::get('user/{id}',function ($id){
+    return User::with('tweets')->findOrFail($id);
 });
