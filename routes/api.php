@@ -21,16 +21,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get('tweets',function (){
+Route::get('tweets', function (Request $request) {
+    $page = $request->get('page', 1);
 
-    return \App\Models\Tweet::with('user:id,avatar,username,name')->latest('id')->paginate(10);
+    $requestedRecords = 10 * $page;
+    $query = Tweet::query()
+        ->with('user:id,avatar,username,name')
+        ->latest('id');
+
+    $total = $query->count();
+    if($requestedRecords > $total){
+       return [];
+    }
+
+    return $query
+        ->limit($requestedRecords)
+        ->get();
 });
 
-Route::get('tweets/{tweet}',function (Tweet $tweet){
+Route::get('tweets/{tweet}', function (Tweet $tweet) {
     return $tweet->load('user:id,avatar,username,name');
 });
 
-Route::post('tweets',function (Request $request){
+Route::post('tweets', function (Request $request) {
     $request->validate([
         'body' => 'required|max:200'
     ]);
@@ -41,6 +54,6 @@ Route::post('tweets',function (Request $request){
     ]);
 });
 
-Route::get('user/{id}',function ($id){
+Route::get('user/{id}', function ($id) {
     return User::with('tweets')->findOrFail($id);
 });
