@@ -3,7 +3,9 @@
 use App\Models\Tweet;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,23 +22,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware(['auth:sanctum'])->group(function(){
 
-Route::get('tweets', function (Request $request) {
-    $page = $request->get('page', 1);
+    Route::post('logout', fn () => auth()->user()->tokens()->delete());
 
-    $requestedRecords = 10 * $page;
-    $query = Tweet::query()
+});
+
+Route::get('tweets', function () {
+    return Tweet::query()
         ->with('user:id,avatar,username,name')
-        ->latest('id');
-
-    $total = $query->count();
-    if($requestedRecords > $total){
-       return [];
-    }
-
-    return $query
-        ->limit($requestedRecords)
-        ->get();
+        ->latest('id')
+        ->paginate(10);
 });
 
 Route::get('tweets/{tweet}', function (Tweet $tweet) {
@@ -56,4 +52,29 @@ Route::post('tweets', function (Request $request) {
 
 Route::get('user/{id}', function ($id) {
     return User::with('tweets')->findOrFail($id);
+});
+
+
+Route::post('login', function (Request $request) {
+
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'device_name' => 'required',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
+    }
+
+    $token = $user->createToken($request->device_name)->plainTextToken;
+    return [
+        'user' => $user->only(['id', 'username', 'name', 'avatar', 'email']),
+        'token' => $token,
+    ];
+
 });
