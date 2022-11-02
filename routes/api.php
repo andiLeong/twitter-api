@@ -3,6 +3,7 @@
 use App\Models\Tweet;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
@@ -22,9 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['auth:sanctum'])->group(function(){
+Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::post('logout', fn () => auth()->user()->tokens()->delete());
+    Route::post('logout', fn() => auth()->user()->tokens()->delete());
 
 });
 
@@ -76,5 +77,24 @@ Route::post('login', function (Request $request) {
         'user' => $user->only(['id', 'username', 'name', 'avatar', 'email']),
         'token' => $token,
     ];
+
+});
+
+Route::post('register', function (Request $request) {
+
+    $validated = $request->validate([
+        'email' => 'required|email|unique:users,email',
+        'name' => 'required|min:3|max:20',
+        'username' => 'required|min:3|max:20|unique:users',
+        'password' => 'required|confirmed',
+        'device_name' => 'required',
+    ]);
+
+    $user = User::create(Arr::except($validated, ['device_name']));
+
+    return response()->json([
+        'user' => $user,
+        'token' => $user->createToken($validated['device_name'])
+    ]);
 
 });
