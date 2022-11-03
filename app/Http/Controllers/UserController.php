@@ -8,6 +8,8 @@ class UserController extends Controller
 {
     public function show($id)
     {
-        return User::with('tweets')->withCount(['beingFollow','follow'])->findOrFail($id);
+        $user = User::with('tweets')->withCount(['beingFollow','follow'])->findOrFail($id);
+        $user->follow_by_logged_in_user = auth()->check() ? auth()->user()->isFollowing($user) : null;
+        return $user;
     }
 }

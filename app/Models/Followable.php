@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Collection;
 trait Followable
 {
 
+    /**
+     * @param User $user
+     * @return mixed
+     */
     public function isFollowing(User $user)
     {
         return $this->follow->contains(fn($following) => $user->id === $following->id);
@@ -25,6 +29,5 @@ trait Followable
     public function follows(User|Collection $userToFollow)
     {
         return $this->follow()->toggle($userToFollow);
-
     }
 }
