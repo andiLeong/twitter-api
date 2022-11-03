@@ -12,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Followable;
 
     protected $appends = ['short_link'];
     /**
@@ -36,20 +36,20 @@ class User extends Authenticatable
 
     public function tweets()
     {
-       return $this->hasMany(Tweet::class);
+        return $this->hasMany(Tweet::class);
     }
 
     public function getShortLinkAttribute()
     {
-        if(!is_null($this->link)){
-            return substr(Str::mask($this->link,'.','20'),0,23);
+        if (!is_null($this->link)) {
+            return substr(Str::mask($this->link, '.', '20'), 0, 23);
         }
     }
 
     public function password()
     {
         return Attribute::make(
-            set: fn ($value) => encrypt($value),
+            set: fn($value) => encrypt($value),
         );
     }
 }
