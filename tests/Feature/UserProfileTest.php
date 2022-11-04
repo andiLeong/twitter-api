@@ -14,7 +14,8 @@ class UserProfileTest extends TestCase
     public function it_can_get_a_user_profile()
     {
         $user = User::factory()->create();
-        $response = $this->get("/api/user/{$user->id}");
+        $this->actingAs($user);
+        $response = $this->getJson("/api/user/{$user->id}");
 
         $response->assertStatus(200);
         $this->assertEquals($user->username, $response->json()['username']);
@@ -28,6 +29,7 @@ class UserProfileTest extends TestCase
     public function it_can_also_get_follower_count_from_profile_endpoint()
     {
         $funny = User::factory()->create();
+        $this->actingAs($funny);
         $this->assertEquals($funny->follow->count(), 0);
 
         $follows = User::factory(5)->create();

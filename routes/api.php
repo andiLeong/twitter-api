@@ -28,7 +28,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('tweets', [TweetController::class,'index']);
     Route::get('user/{id}', [UserController::class,'show']);
     Route::post('follow-toggle/{user}', [FollowController::class, 'store']);
     Route::post('like-tweet-toggle/{tweet}', [LikeTweetController::class, 'store']);
@@ -36,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('tweets', [TweetController::class, 'store']);
 });
 
+Route::get('tweets', [TweetController::class,'index']);
 Route::get('tweets/{tweet}', [TweetController::class, 'show']);
 
 Route::post('login', [LoginController::class, 'store']);
