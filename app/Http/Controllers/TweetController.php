@@ -10,6 +10,7 @@ class TweetController extends Controller
     public function index()
     {
         return Tweet::query()
+            ->withCount(['likes'])
             ->with('user:id,avatar,username,name')
             ->latest('id')
             ->paginate(10);

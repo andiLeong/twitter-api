@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\LikeTweetController;
 use App\Http\Controllers\TweetController;
 use App\Http\Controllers\UserController;
 use App\Models\Tweet;
@@ -28,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('follow-toggle/{user}', [FollowController::class, 'store']);
+    Route::post('like-tweet-toggle/{tweet}', [LikeTweetController::class, 'store']);
     Route::post('logout', fn() => auth()->user()->tokens()->delete());
     Route::post('tweets', [TweetController::class, 'store']);
 });

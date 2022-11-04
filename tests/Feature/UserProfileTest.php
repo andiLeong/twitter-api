@@ -59,10 +59,12 @@ class UserProfileTest extends TestCase
         $this->assertFalse($body['follow_by_logged_in_user']);
     }
 
+    /** @test */
     public function it_can_get_true_if_logged_in_user_is_not_following_the_user_being_query()
     {
         $david = User::factory()->create();
         $jimmy = User::factory()->create();
+        $this->actingAs($jimmy);
 
         $jimmy->follows($david);
         $body2 = $this->get("/api/user/{$david->id}")->json();

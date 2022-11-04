@@ -9,6 +9,9 @@ class FollowController extends Controller
 {
     public function store(User $user)
     {
+        if(auth()->id() === $user->id){
+           return abort(403,'You cant follow your self');
+        }
         auth()->user()->follows($user);
     }
 }

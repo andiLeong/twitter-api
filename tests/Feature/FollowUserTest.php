@@ -50,4 +50,14 @@ class FollowUserTest extends TestCase
         ]);
         $this->assertFalse($green->fresh()->isFollowing($aileen));
     }
+
+    /** @test */
+    public function a_user_cant_follow_your_self()
+    {
+        $green = User::factory()->create();
+        $this->actingAs($green);
+
+        $response = $this->postJson("/api/follow-toggle/{$green->id}");
+        $response->assertForbidden();
+    }
 }
