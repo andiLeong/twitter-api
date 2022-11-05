@@ -50,16 +50,18 @@ class RegistrationTest extends TestCase
 
         $response = $this->tester->fire($payload);
 
-        $this->assertDatabaseHas('users', [
-            'email' => $payload['email']
-        ]);
+        $user = User::whereEmail($payload['email'])->first();
+        $this->assertNotNull($user);
+        $this->assertNotNull($user->avatar);
+        $this->assertEquals($payload['username'],$user->username);
+        $this->assertEquals($payload['name'],$user->name);
 
         $response->assertStatus(200);
         $this->assertEquals($payload['email'], $response->json()['user']['email']);
     }
 
     /** @test */
-    public function after_register_user_user_token_is_created()
+    public function after_register_user_token_is_created_and_sent_token_back_to_front_end()
     {
         $this->assertdatabasecount('personal_access_tokens', 0);
         $payload = $this->correctfields();

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -25,14 +26,15 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            if(!isset($user->attributes['avatar'])){
+                $user->avatar = $user->generateAvatar();
+            }
+        });
+
+    }
 
     public function tweets()
     {
@@ -51,5 +53,10 @@ class User extends Authenticatable
         return Attribute::make(
             set: fn($value) => encrypt($value),
         );
+    }
+
+    public function generateAvatar()
+    {
+       return 'https://i.pravatar.cc/150?img=' . Arr::random(range(1,70));
     }
 }
