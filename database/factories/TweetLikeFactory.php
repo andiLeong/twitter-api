@@ -17,7 +17,7 @@ class TweetLikeFactory extends Factory
     public function definition()
     {
         return [
-            //
-        ];
+                //
+            ];
     }
 }

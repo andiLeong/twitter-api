@@ -13,7 +13,7 @@ class FollowUserTest extends TestCase
     private mixed $aileen;
     private mixed $green;
 
-    protected function setUp() :Void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->green = User::factory()->create();
@@ -29,7 +29,9 @@ class FollowUserTest extends TestCase
             'follow_user_id' => $this->aileen->id,
         ]);
 
-        $response = $this->login($this->green)->postJson("/api/follow-toggle/{$this->aileen->id}");
+        $response = $this->login($this->green)->postJson(
+            "/api/follow-toggle/{$this->aileen->id}",
+        );
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('follows', [
@@ -45,7 +47,9 @@ class FollowUserTest extends TestCase
         $this->green->follows($this->aileen);
         $this->assertTrue($this->green->isFollowing($this->aileen));
 
-        $response = $this->login($this->green)->postJson("/api/follow-toggle/{$this->aileen->id}");
+        $response = $this->login($this->green)->postJson(
+            "/api/follow-toggle/{$this->aileen->id}",
+        );
         $response->assertStatus(200);
 
         $this->assertDatabaseMissing('follows', [
@@ -58,7 +62,9 @@ class FollowUserTest extends TestCase
     /** @test */
     public function a_user_cant_follow_your_self()
     {
-        $response = $this->login($this->green)->postJson("/api/follow-toggle/{$this->green->id}");
+        $response = $this->login($this->green)->postJson(
+            "/api/follow-toggle/{$this->green->id}",
+        );
         $response->assertForbidden();
     }
 }

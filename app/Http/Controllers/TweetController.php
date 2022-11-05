@@ -11,7 +11,7 @@ class TweetController extends Controller
     {
         return Tweet::query()
             ->withCount(['likes'])
-            ->with('user:id,avatar,username,name','likes')
+            ->with('user:id,avatar,username,name', 'likes')
             ->latest('id')
             ->paginate(10);
     }
@@ -19,12 +19,12 @@ class TweetController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'body' => 'required|max:200'
+            'body' => 'required|max:200',
         ]);
 
         return Tweet::create([
             'body' => $request->body,
-            'user_id' => auth()->id()
+            'user_id' => auth()->id(),
         ]);
     }
 
@@ -35,10 +35,10 @@ class TweetController extends Controller
 
     public function destroy(Tweet $tweet)
     {
-        if(auth()->id() !== $tweet->user_id){
-            abort(403,'Your dnt have permission');
+        if (auth()->id() !== $tweet->user_id) {
+            abort(403, 'Your dnt have permission');
         }
 
-       $tweet->delete();
+        $tweet->delete();
     }
 }

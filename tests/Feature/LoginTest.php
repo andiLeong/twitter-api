@@ -17,12 +17,17 @@ class LoginTest extends TestCase
     {
         parent::setUp();
 
-//        $user = User::factory()->create();
-        $this->tester = new ValidationTester('post', '/api/login', [
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'required',
-        ], $this);
+        //        $user = User::factory()->create();
+        $this->tester = new ValidationTester(
+            'post',
+            '/api/login',
+            [
+                'email' => 'required|email',
+                'password' => 'required',
+                'device_name' => 'required',
+            ],
+            $this,
+        );
     }
 
     /** @test */

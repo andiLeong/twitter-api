@@ -25,16 +25,20 @@ class DatabaseSeeder extends Seeder
 
         User::all()->each(function ($user) {
             Tweet::factory()->create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ]);
         });
 
         $this->setUpUserFollows();
 
-        Tweet::latest('id')->take(10)->get()->each(function ($tweet) {
-            User::factory(20)->create()->each(fn($user) => $tweet->likeBy($user));
-        });
-
+        Tweet::latest('id')
+            ->take(10)
+            ->get()
+            ->each(function ($tweet) {
+                User::factory(20)
+                    ->create()
+                    ->each(fn($user) => $tweet->likeBy($user));
+            });
     }
 
     private function setUpUserFollows()

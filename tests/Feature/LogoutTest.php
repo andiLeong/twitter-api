@@ -17,11 +17,14 @@ class LogoutTest extends TestCase
         $token = $user->createToken('ios')->plainTextToken;
         $this->assertnotempty($user->tokens);
 
-        $this->postJson('api/logout', [], [
-            'Authorization' => "Bearer {$token}"
-        ]);
+        $this->postJson(
+            'api/logout',
+            [],
+            [
+                'Authorization' => "Bearer {$token}",
+            ],
+        );
 
         $this->assertempty($user->refresh()->tokens);
     }
-
 }

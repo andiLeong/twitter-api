@@ -21,19 +21,15 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected static function booted()
     {
         static::creating(function ($user) {
-            if(!isset($user->attributes['avatar'])){
+            if (!isset($user->attributes['avatar'])) {
                 $user->avatar = $user->generateAvatar();
             }
         });
-
     }
 
     public function tweets()
@@ -50,13 +46,11 @@ class User extends Authenticatable
 
     public function password()
     {
-        return Attribute::make(
-            set: fn($value) => encrypt($value),
-        );
+        return Attribute::make(set: fn($value) => encrypt($value));
     }
 
     public function generateAvatar()
     {
-       return 'https://i.pravatar.cc/150?img=' . Arr::random(range(1,70));
+        return 'https://i.pravatar.cc/150?img=' . Arr::random(range(1, 70));
     }
 }

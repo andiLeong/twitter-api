@@ -12,9 +12,9 @@ class UserProfileTest extends TestCase
 
     private mixed $user;
 
-    public function setUp() :void
+    public function setUp(): void
     {
-       parent::setUp();
+        parent::setUp();
 
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
@@ -26,7 +26,10 @@ class UserProfileTest extends TestCase
         $response = $this->getJson("/api/user/{$this->user->id}");
 
         $response->assertStatus(200);
-        $this->assertEquals($this->user->username, $response->json()['username']);
+        $this->assertEquals(
+            $this->user->username,
+            $response->json()['username'],
+        );
         $this->assertEquals($this->user->id, $response->json()['id']);
         $this->assertEquals($this->user->email, $response->json()['email']);
         $this->assertEquals($this->user->name, $response->json()['name']);

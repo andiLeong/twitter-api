@@ -4,10 +4,14 @@ namespace App\Models;
 
 trait Likable
 {
-
     public function likes()
     {
-        return $this->belongsToMany(User::class, 'tweet_likes', 'tweet_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(
+            User::class,
+            'tweet_likes',
+            'tweet_id',
+            'user_id',
+        )->withTimestamps();
     }
 
     public function likeBy(User $user)

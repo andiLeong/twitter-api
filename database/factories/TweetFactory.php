@@ -18,7 +18,7 @@ class TweetFactory extends Factory
      */
     public function definition()
     {
-        $day = Arr::random(range(1,10));
+        $day = Arr::random(range(1, 10));
         return [
             'user_id' => User::factory(),
             'body' => $this->faker->sentence(10),

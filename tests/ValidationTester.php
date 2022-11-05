@@ -2,13 +2,11 @@
 
 namespace Tests;
 
-
 use BadMethodCallException;
 use Illuminate\Support\Facades\DB;
 
 class ValidationTester
 {
-
     private $isJson = true;
     private $method;
     private $endpoint;
@@ -25,12 +23,9 @@ class ValidationTester
         $this->config = $config;
     }
 
-
     public function run()
     {
-
         foreach ($this->rules as $attribute => $rule) {
-
             if (!is_array($rule)) {
                 $rule = explode('|', $rule);
             }
@@ -44,10 +39,7 @@ class ValidationTester
 
                 $this->$method($attribute, $args);
             }
-
         }
-
-
     }
 
     public function fire($payload = [])
@@ -59,7 +51,7 @@ class ValidationTester
     public function getMethodToCall()
     {
         $binding = [
-            'post' => 'postJson'
+            'post' => 'postJson',
         ];
 
         if (!array_key_exists($this->method, $binding)) {
@@ -72,7 +64,7 @@ class ValidationTester
     protected function email($attribute)
     {
         $res = $this->fire([
-            $attribute => 'not an email'
+            $attribute => 'not an email',
         ]);
         $res->assertJsonValidationErrorFor($attribute);
     }
@@ -87,7 +79,7 @@ class ValidationTester
     {
         $length = $args[0];
         $res = $this->fire([
-            $attribute => str_repeat('a', $length - 1)
+            $attribute => str_repeat('a', $length - 1),
         ]);
         $res->assertJsonValidationErrorFor($attribute);
     }
@@ -96,7 +88,7 @@ class ValidationTester
     {
         $length = $args[0];
         $res = $this->fire([
-            $attribute => str_repeat('a', $length + 1)
+            $attribute => str_repeat('a', $length + 1),
         ]);
         $res->assertJsonValidationErrorFor($attribute);
     }
@@ -123,7 +115,6 @@ class ValidationTester
         $res->assertJsonValidationErrorFor($attribute);
     }
 
-
     private function parseRule(mixed $singleRule)
     {
         $method = $singleRule;
@@ -137,4 +128,3 @@ class ValidationTester
         return [$method, $payload ?? []];
     }
 }
-

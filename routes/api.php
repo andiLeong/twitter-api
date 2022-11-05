@@ -6,8 +6,6 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeTweetController;
 use App\Http\Controllers\TweetController;
 use App\Http\Controllers\UserController;
-use App\Models\Tweet;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,16 +25,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-
-    Route::get('user/{id}', [UserController::class,'show']);
+    Route::get('user/{id}', [UserController::class, 'show']);
     Route::post('follow-toggle/{user}', [FollowController::class, 'store']);
-    Route::post('like-tweet-toggle/{tweet}', [LikeTweetController::class, 'store']);
-    Route::post('logout', fn() => auth()->user()->tokens()->delete());
-    Route::get('tweets', [TweetController::class,'index']);
+    Route::post('like-tweet-toggle/{tweet}', [
+        LikeTweetController::class,
+        'store',
+    ]);
+    Route::post(
+        'logout',
+        fn() => auth()
+            ->user()
+            ->tokens()
+            ->delete(),
+    );
+    Route::get('tweets', [TweetController::class, 'index']);
     Route::post('tweets', [TweetController::class, 'store']);
     Route::delete('tweets/{tweet}', [TweetController::class, 'destroy']);
 });
-
 
 Route::get('tweets/{tweet}', [TweetController::class, 'show']);
 

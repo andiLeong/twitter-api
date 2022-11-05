@@ -17,7 +17,7 @@ class FollowFactory extends Factory
     public function definition()
     {
         return [
-            //
-        ];
+                //
+            ];
     }
 }

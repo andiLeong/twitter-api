@@ -18,20 +18,26 @@ class RegistrationTest extends TestCase
         parent::setUp();
 
         $user = User::factory()->create();
-        $this->tester = new ValidationTester('post', '/api/register', [
-            'email' => 'required|email|unique:users,email',
-            'name' => 'required|min:3|max:20',
-            'username' => 'required|min:3|max:20|unique:users,username',
-            'password' => 'required|confirmed',
-            'device_name' => 'required',
-        ], $this, [
-            'username' => [
-                'unique' => $user
+        $this->tester = new ValidationTester(
+            'post',
+            '/api/register',
+            [
+                'email' => 'required|email|unique:users,email',
+                'name' => 'required|min:3|max:20',
+                'username' => 'required|min:3|max:20|unique:users,username',
+                'password' => 'required|confirmed',
+                'device_name' => 'required',
             ],
-            'email' => [
-                'unique' => $user
-            ]
-        ]);
+            $this,
+            [
+                'username' => [
+                    'unique' => $user,
+                ],
+                'email' => [
+                    'unique' => $user,
+                ],
+            ],
+        );
     }
 
     /** @test */
@@ -45,7 +51,7 @@ class RegistrationTest extends TestCase
     {
         $payload = $this->correctFields();
         $this->assertDatabaseMissing('users', [
-            'email' => $payload['email']
+            'email' => $payload['email'],
         ]);
 
         $response = $this->tester->fire($payload);
@@ -53,11 +59,14 @@ class RegistrationTest extends TestCase
         $user = User::whereEmail($payload['email'])->first();
         $this->assertNotNull($user);
         $this->assertNotNull($user->avatar);
-        $this->assertEquals($payload['username'],$user->username);
-        $this->assertEquals($payload['name'],$user->name);
+        $this->assertEquals($payload['username'], $user->username);
+        $this->assertEquals($payload['name'], $user->name);
 
         $response->assertStatus(200);
-        $this->assertEquals($payload['email'], $response->json()['user']['email']);
+        $this->assertEquals(
+            $payload['email'],
+            $response->json()['user']['email'],
+        );
     }
 
     /** @test */
@@ -74,14 +83,16 @@ class RegistrationTest extends TestCase
 
     public function correctFields($overrides = [])
     {
-        return array_merge([
-            'email' => 'exmaple@example.com',
-            'username' => 'dummy',
-            'name' => 'cindy',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-            'device_name' => 'ios',
-        ], $overrides);
-
+        return array_merge(
+            [
+                'email' => 'exmaple@example.com',
+                'username' => 'dummy',
+                'name' => 'cindy',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+                'device_name' => 'ios',
+            ],
+            $overrides,
+        );
     }
 }

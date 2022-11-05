@@ -30,20 +30,27 @@ class ReadTweetsTest extends TestCase
     public function it_gets_a_tweet_likes_count()
     {
         $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)->first();
-        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)->first();
+        $responseLikeTweet = $response
+            ->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)
+            ->first();
+        $responseNotLikeTweet = $response
+            ->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)
+            ->first();
 
         $this->assertEquals(0, $responseNotLikeTweet['likes_count']);
         $this->assertEquals(1, $responseLikeTweet['likes_count']);
-
     }
 
     /** @test */
     public function it_can_determine_if_logged_in_user_liked_a_tweet()
     {
         $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)->first();
-        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)->first();
+        $responseLikeTweet = $response
+            ->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)
+            ->first();
+        $responseNotLikeTweet = $response
+            ->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)
+            ->first();
 
         $this->assertFalse($responseNotLikeTweet['liked_by_user']);
         $this->assertTrue($responseLikeTweet['liked_by_user']);

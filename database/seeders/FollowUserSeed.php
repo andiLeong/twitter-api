@@ -30,9 +30,6 @@ class FollowUserSeed
 
     public function remainingIds($user)
     {
-        return array_filter($this->userIds,
-            fn($range) => $user->id !== $range
-        );
+        return array_filter($this->userIds, fn($range) => $user->id !== $range);
     }
-
 }

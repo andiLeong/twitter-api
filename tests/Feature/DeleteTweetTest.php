@@ -17,13 +17,13 @@ class DeleteTweetTest extends TestCase
         $user = User::factory()->create();
         $this->login($user);
         $tweet = Tweet::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
         $response = $this->deleteJson("/api/tweets/{$tweet->id}");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('tweets', [
-            'id' => $tweet->id
+            'id' => $tweet->id,
         ]);
     }
 
@@ -36,7 +36,7 @@ class DeleteTweetTest extends TestCase
 
         $response->assertStatus(403);
         $this->assertDatabaseHas('tweets', [
-            'id' => $tweet->id
+            'id' => $tweet->id,
         ]);
     }
 }
