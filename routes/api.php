@@ -32,11 +32,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('follow-toggle/{user}', [FollowController::class, 'store']);
     Route::post('like-tweet-toggle/{tweet}', [LikeTweetController::class, 'store']);
     Route::post('logout', fn() => auth()->user()->tokens()->delete());
+    Route::get('tweets', [TweetController::class,'index']);
     Route::post('tweets', [TweetController::class, 'store']);
     Route::delete('tweets/{tweet}', [TweetController::class, 'destroy']);
 });
 
-Route::get('tweets', [TweetController::class,'index']);
+
 Route::get('tweets/{tweet}', [TweetController::class, 'show']);
 
 Route::post('login', [LoginController::class, 'store']);
