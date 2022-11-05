@@ -20,4 +20,11 @@ trait Likable
         $user ??= auth()->user();
         return $this->likes->contains(fn($likes) => $user->id === $likes->id);
     }
+
+    public function getLikedByUserAttribute()
+    {
+        if (auth()->check()) {
+            return $this->likedBy();
+        }
+    }
 }

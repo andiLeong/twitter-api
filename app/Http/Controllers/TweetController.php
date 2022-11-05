@@ -32,4 +32,13 @@ class TweetController extends Controller
     {
         return $tweet->load('user:id,avatar,username,name');
     }
+
+    public function destroy(Tweet $tweet)
+    {
+        if(auth()->id() !== $tweet->user_id){
+            abort(403,'Your dnt have permission');
+        }
+
+       $tweet->delete();
+    }
 }

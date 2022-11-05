@@ -11,40 +11,46 @@ class LikeTweetTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    private mixed $tweet;
+    private mixed $jane;
+
+    protected function setUp() :void
+    {
+        parent::setUp();
+        $this->jane = User::factory()->create();
+        $this->tweet = Tweet::factory()->create();
+    }
+
     /** @test */
     public function it_can_like_a_tweet()
     {
-        $jane = User::factory()->create();
-        $this->actingAs($jane);
-        $tweet = Tweet::factory()->create();
-        $response = $this->postJson("api/like-tweet-toggle/{$tweet->id}");
+        $response = $this->login($this->jane)->postJson("api/like-tweet-toggle/{$this->tweet->id}");
 
         $response->assertStatus(200);
-        $this->assertTrue($tweet->likedBy($jane));
+        $this->assertTrue($this->tweet->likedBy($this->jane));
         $this->assertDatabaseHas('tweet_likes', [
-            'user_id' => $jane->id,
-            'tweet_id' => $tweet->id,
+            'user_id' => $this->jane->id,
+            'tweet_id' => $this->tweet->id,
         ]);
     }
 
     /** @test */
     public function it_can_unlike_a_tweet()
     {
-        $jane = User::factory()->create();
-        $this->actingAs($jane);
-        $tweet = Tweet::factory()->create();
-        $tweet->likeBy($jane);
+        $this->jane = User::factory()->create();
+        $this->tweet = Tweet::factory()->create();
+        $this->tweet->likeBy($this->jane);
         $this->assertDatabaseHas('tweet_likes', [
-            'user_id' => $jane->id,
-            'tweet_id' => $tweet->id,
+            'user_id' => $this->jane->id,
+            'tweet_id' => $this->tweet->id,
         ]);
 
-        $this->postJson("api/like-tweet-toggle/{$tweet->id}");
+        $this->login($this->jane)->postJson("api/like-tweet-toggle/{$this->tweet->id}");
 
-        $this->assertFalse($tweet->likedBy($jane));
+        $this->assertFalse($this->tweet->likedBy($this->jane));
         $this->assertDatabaseMissing('tweet_likes', [
-            'user_id' => $jane->id,
-            'tweet_id' => $tweet->id,
+            'user_id' => $this->jane->id,
+            'tweet_id' => $this->tweet->id,
         ]);
     }
 }

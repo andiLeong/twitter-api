@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('like-tweet-toggle/{tweet}', [LikeTweetController::class, 'store']);
     Route::post('logout', fn() => auth()->user()->tokens()->delete());
     Route::post('tweets', [TweetController::class, 'store']);
+    Route::delete('tweets/{tweet}', [TweetController::class, 'destroy']);
 });
 
 Route::get('tweets', [TweetController::class,'index']);

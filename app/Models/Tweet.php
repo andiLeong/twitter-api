@@ -16,10 +16,4 @@ class Tweet extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getLikedByUserAttribute()
-    {
-        if (auth()->check()) {
-            return $this->likedBy();
-        }
-    }
 }

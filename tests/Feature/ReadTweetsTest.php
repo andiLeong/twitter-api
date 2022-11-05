@@ -11,19 +11,27 @@ class ReadTweetsTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    /** @test */
-    public function it_gets_a_tweet_count()
+    private mixed $user;
+    private mixed $likedTweets;
+    private mixed $notLikedTweets;
+
+    public function setUp(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        parent::setUp();
+        $this->user = User::factory()->create();
+        $this->login($this->user);
 
-        $likedTweets = Tweet::factory()->create();
-        $notLikedTweets = Tweet::factory()->create();
-        $likedTweets->likeBy($user);
+        $this->likedTweets = Tweet::factory()->create();
+        $this->notLikedTweets = Tweet::factory()->create();
+        $this->likedTweets->likeBy($this->user);
+    }
 
+    /** @test */
+    public function it_gets_a_tweet_likes_count()
+    {
         $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $likedTweets->id)->first();
-        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $notLikedTweets->id)->first();
+        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)->first();
+        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)->first();
 
         $this->assertEquals(0, $responseNotLikeTweet['likes_count']);
         $this->assertEquals(1, $responseLikeTweet['likes_count']);
@@ -33,16 +41,9 @@ class ReadTweetsTest extends TestCase
     /** @test */
     public function it_can_determine_if_logged_in_user_liked_a_tweet()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $likedTweets = Tweet::factory()->create();
-        $notLikedTweets = Tweet::factory()->create();
-        $likedTweets->likeBy($user);
-
         $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $likedTweets->id)->first();
-        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $notLikedTweets->id)->first();
+        $responseLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)->first();
+        $responseNotLikeTweet = $response->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)->first();
 
         $this->assertFalse($responseNotLikeTweet['liked_by_user']);
         $this->assertTrue($responseLikeTweet['liked_by_user']);
