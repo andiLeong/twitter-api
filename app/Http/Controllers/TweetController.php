@@ -9,7 +9,14 @@ class TweetController extends Controller
 {
     public function index()
     {
+        $usersIds = auth()
+            ->user()
+            ->follow->pluck('id')
+            ->merge([auth()->id()])
+            ->all();
+
         return Tweet::query()
+            ->whereIn('user_id', $usersIds)
             ->withCount(['likes'])
             ->with('user:id,avatar,username,name', 'likes')
             ->latest('id')
@@ -28,9 +35,12 @@ class TweetController extends Controller
         ]);
     }
 
-    public function show(Tweet $tweet)
+    public function show($id)
     {
-        return $tweet->load('user:id,avatar,username,name');
+        return Tweet::with('user:id,avatar,username,name')
+            ->withCount('likes')
+            ->where('id', $id)
+            ->firstOrFail();
     }
 
     public function destroy(Tweet $tweet)

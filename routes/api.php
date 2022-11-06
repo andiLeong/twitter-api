@@ -43,7 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('tweets/{tweet}', [TweetController::class, 'destroy']);
 });
 
-Route::get('tweets/{tweet}', [TweetController::class, 'show']);
+Route::get('tweets/{id}', [TweetController::class, 'show']);
 
 Route::post('login', [LoginController::class, 'store']);
 Route::post('register', [RegisterController::class, 'store']);
