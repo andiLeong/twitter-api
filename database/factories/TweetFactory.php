@@ -23,6 +23,7 @@ class TweetFactory extends Factory
             'user_id' => User::factory(),
             'body' => $this->faker->sentence(10),
             'created_at' => now()->subDays($day),
+            'retweeted_id' => null,
         ];
     }
 }

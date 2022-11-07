@@ -16,6 +16,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, Followable;
 
     protected $appends = ['short_link'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -37,6 +38,16 @@ class User extends Authenticatable
         return $this->hasMany(Tweet::class);
     }
 
+    public function retweets()
+    {
+        return $this->belongsToMany(
+            Tweet::class,
+            'retweets',
+            'user_id',
+            'tweet_id',
+        )->withTimestamps();
+    }
+
     public function getShortLinkAttribute()
     {
         if (!is_null($this->link)) {
@@ -52,5 +63,21 @@ class User extends Authenticatable
     public function generateAvatar()
     {
         return 'https://i.pravatar.cc/150?img=' . Arr::random(range(1, 70));
+    }
+
+    public function tweet($body, $retweetId = null)
+    {
+        return $this->tweets()->create([
+            'body' => $body,
+            'retweeted_id' => $retweetId,
+        ]);
+    }
+
+    public function retweet(Tweet $oldTweet, $body = null)
+    {
+        return tap(
+            $this->tweet($body, $oldTweet->id),
+            fn() => $this->retweets()->attach($oldTweet),
+        );
     }
 }

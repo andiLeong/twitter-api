@@ -29,10 +29,9 @@ class TweetController extends Controller
             'body' => 'required|max:200',
         ]);
 
-        return Tweet::create([
-            'body' => $request->body,
-            'user_id' => auth()->id(),
-        ]);
+        return auth()
+            ->user()
+            ->tweet($request->body);
     }
 
     public function show($id)

@@ -12,17 +12,19 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('tweets', function (Blueprint $table) {
+        Schema::create('retweets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->unsignedBigInteger('retweeted_id')->nullable();
-            $table->string('body')->nullable();
-            $table->timestamps();
-
             $table
-                ->foreign('retweeted_id')
-                ->references('id')
-                ->on('tweets');
+                ->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+            $table
+                ->foreignId('tweet_id')
+                ->constrained('tweets')
+                ->cascadeOnDelete();
+
+            $table->unique(['user_id', 'tweet_id']);
+            $table->timestamps();
         });
     }
 
@@ -33,6 +35,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('tweets');
+        Schema::dropIfExists('retweets');
     }
 };

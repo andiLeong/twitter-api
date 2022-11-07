@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeTweetController;
+use App\Http\Controllers\RetweetController;
 use App\Http\Controllers\TweetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('tweets', [TweetController::class, 'index']);
     Route::post('tweets', [TweetController::class, 'store']);
     Route::delete('tweets/{tweet}', [TweetController::class, 'destroy']);
+    Route::post('retweet/{tweet}', [RetweetController::class, 'store']);
 });
 
 Route::get('tweets/{id}', [TweetController::class, 'show']);
