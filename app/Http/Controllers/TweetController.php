@@ -17,7 +17,7 @@ class TweetController extends Controller
 
         return Tweet::query()
             ->whereIn('user_id', $usersIds)
-            ->withCount(['likes'])
+            ->withCount(['likes', 'retweets'])
             ->with('user:id,avatar,username,name', 'likes')
             ->latest('id')
             ->paginate(10);

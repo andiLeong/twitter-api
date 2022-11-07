@@ -30,13 +30,12 @@ class ReadTweetsTest extends TestCase
     /** @test */
     public function it_gets_a_tweet_likes_count()
     {
-        $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response
-            ->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)
-            ->first();
-        $responseNotLikeTweet = $response
-            ->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)
-            ->first();
+        $tweets = $this->getTweets();
+        $responseLikeTweet = $this->filterById($tweets, $this->likedTweets->id);
+        $responseNotLikeTweet = $this->filterById(
+            $tweets,
+            $this->notLikedTweets->id,
+        );
 
         $this->assertEquals(0, $responseNotLikeTweet['likes_count']);
         $this->assertEquals(1, $responseLikeTweet['likes_count']);
@@ -45,16 +44,12 @@ class ReadTweetsTest extends TestCase
     /** @test */
     public function it_can_determine_if_logged_in_user_liked_a_tweet()
     {
-        $response = $this->get('/api/tweets')->collect('data');
-        $responseLikeTweet = $response
-            ->filter(fn($tweet) => $tweet['id'] === $this->likedTweets->id)
-            ->first();
-        $responseNotLikeTweet = $response
-            ->filter(fn($tweet) => $tweet['id'] === $this->notLikedTweets->id)
-            ->first();
+        $tweets = $this->getTweets();
+        $likeTweet = $this->filterById($tweets, $this->likedTweets->id);
+        $notLikeTweet = $this->filterById($tweets, $this->notLikedTweets->id);
 
-        $this->assertFalse($responseNotLikeTweet['liked_by_user']);
-        $this->assertTrue($responseLikeTweet['liked_by_user']);
+        $this->assertFalse($notLikeTweet['liked_by_user']);
+        $this->assertTrue($likeTweet['liked_by_user']);
     }
 
     /** @test */
@@ -70,14 +65,41 @@ class ReadTweetsTest extends TestCase
         ]);
 
         $this->assertFalse($this->kevin->isFollowing($maria));
-        $responseTweetIds = $this->get('/api/tweets')
-            ->collect('data')
+        $responseTweetIds = $this->getTweets()
             ->pluck('id')
             ->all();
 
         $this->assertTrue(in_array($this->likedTweets->id, $responseTweetIds));
         $this->assertTrue(in_array($kevinTweet->id, $responseTweetIds));
         $this->assertFalse(in_array($mariaTweet->id, $responseTweetIds));
+    }
+
+    /** @test */
+    public function it_can_get_retweet_count_of_each_tweet()
+    {
+        $noRetweetTweet = $this->filterById(
+            $this->getTweets(),
+            $this->notLikedTweets->id,
+        );
+
+        $this->kevin->retweet($this->likedTweets);
+        $retweetTweet = $this->filterById(
+            $this->getTweets(),
+            $this->likedTweets->id,
+        );
+
+        $this->assertEquals(0, $noRetweetTweet['retweets_count']);
+        $this->assertEquals(1, $retweetTweet['retweets_count']);
+    }
+
+    public function getTweets()
+    {
+        return $this->get('/api/tweets')->collect('data');
+    }
+
+    public function filterById($tweets, $id)
+    {
+        return $tweets->filter(fn($tweet) => $tweet['id'] === $id)->first();
     }
 
     private function loginAsKevin()
