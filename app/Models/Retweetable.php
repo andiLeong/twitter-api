@@ -43,7 +43,7 @@ class Retweetable
     {
         $this->tweet->retweets()->detach($this->user);
         Tweet::where('user_id', $this->user->id)
-            ->where('retweeted_id', $this->user->id)
+            ->where('retweeted_id', $this->tweet->id)
             ->delete();
         return true;
     }

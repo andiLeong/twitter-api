@@ -76,24 +76,24 @@ class RetweetTest extends TestCase
     /** @test */
     public function a_retweet_can_be_undo()
     {
-        $this->retweet();
+        $tweet = Tweet::factory()->create();
+        $this->retweet($tweet->id);
         $this->assertDatabaseHas('retweets', [
             'user_id' => $this->candy->id,
-            'tweet_id' => $this->tweet->id,
+            'tweet_id' => $tweet->id,
         ]);
         $newRetweetTweet = Tweet::where('user_id', $this->candy->id)
-            ->where('retweeted_id', $this->tweet->id)
+            ->where('retweeted_id', $tweet->id)
             ->first();
         $this->assertNotNull($newRetweetTweet);
 
-        $response = $this->retweet();
+        $response = $this->retweet($tweet->id);
         $this->assertDatabaseMissing('retweets', [
             'user_id' => $this->candy->id,
-            'tweet_id' => $this->tweet->id,
+            'tweet_id' => $tweet->id,
         ]);
         $this->assertDatabaseMissing('tweets', [
-            'user_id' => $this->candy->id,
-            'retweeted_id' => $newRetweetTweet->id,
+            'id' => $newRetweetTweet->id,
         ]);
     }
 

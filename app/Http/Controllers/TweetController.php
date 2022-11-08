@@ -15,12 +15,23 @@ class TweetController extends Controller
             ->merge([auth()->id()])
             ->all();
 
-        return Tweet::query()
-            ->whereIn('user_id', $usersIds)
-            ->withCount(['likes', 'retweets'])
-            ->with('user:id,avatar,username,name', 'likes')
-            ->latest('id')
-            ->paginate(10);
+        $res = tap(
+            Tweet::query()
+                ->whereIn('user_id', $usersIds)
+                ->withCount(['likes', 'retweets'])
+                ->with(
+                    'user:id,avatar,username,name',
+                    'likes',
+                    'retweetedTweet:id,user_id,body',
+                    'retweetedTweet.user:id,name,avatar',
+                )
+                ->latest('id')
+                ->paginate(10),
+        )->each(function ($tweet) {
+            $tweet->retweeted_by_user = $tweet->retweetedBy();
+        });
+
+        return $res;
     }
 
     public function store(Request $request)

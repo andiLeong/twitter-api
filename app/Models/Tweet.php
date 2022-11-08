@@ -26,9 +26,20 @@ class Tweet extends Model
         )->withTimestamps();
     }
 
+    public function retweetedTweet()
+    {
+        return $this->hasOne(Tweet::class, 'id', 'retweeted_id');
+    }
+
     public function isRetweeted()
     {
         return $this->retweeted_id !== null;
+    }
+
+    public function retweetedBy(User $user = null)
+    {
+        $user ??= auth()->user();
+        return $this->retweets->contains(fn($t) => $t->id === $user->id);
     }
 
     public function retweet(User $user, $body)

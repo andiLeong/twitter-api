@@ -92,14 +92,47 @@ class ReadTweetsTest extends TestCase
         $this->assertEquals(1, $retweetTweet['retweets_count']);
     }
 
+    /** @test */
+    public function it_can_get_retweet_of_a_tweet()
+    {
+        $this->kevin->retweet($this->notLikedTweets);
+        $tweets = $this->getTweets();
+
+        $retweetTweet = $this->filterById(
+            $tweets,
+            $this->notLikedTweets->id,
+            'retweeted_id',
+        )['retweeted_tweet'];
+
+        $this->assertEquals($this->notLikedTweets->body, $retweetTweet['body']);
+        $this->assertEquals(
+            $this->notLikedTweets->user->avatar,
+            $retweetTweet['user']['avatar'],
+        );
+        $this->assertEquals(
+            $this->notLikedTweets->user->name,
+            $retweetTweet['user']['name'],
+        );
+    }
+
+    /** @test */
+    public function it_can_check_each_tweet_is_retweeted_by_the_logged_in_user()
+    {
+        $this->kevin->retweet($this->notLikedTweets);
+        $tweets = $this->getTweets();
+
+        $retweetTweet = $this->filterById($tweets, $this->notLikedTweets->id);
+        $this->assertTrue($retweetTweet['retweeted_by_user']);
+    }
+
     public function getTweets()
     {
         return $this->get('/api/tweets')->collect('data');
     }
 
-    public function filterById($tweets, $id)
+    public function filterById($tweets, $id, $column = 'id')
     {
-        return $tweets->filter(fn($tweet) => $tweet['id'] === $id)->first();
+        return $tweets->filter(fn($tweet) => $tweet[$column] === $id)->first();
     }
 
     private function loginAsKevin()
