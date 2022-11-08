@@ -67,7 +67,7 @@ class RetweetTest extends TestCase
             'retweeted_id' => $this->tweet->id,
         ]);
 
-        $this->assertTrue($retweetedTweet->isRetweet());
+        $this->assertTrue($retweetedTweet->isRetweeted());
 
         $response = $this->retweet($retweetedTweet->id);
         $response->assertStatus(403);

@@ -26,16 +26,13 @@ class Tweet extends Model
         )->withTimestamps();
     }
 
-    public function isRetweet()
+    public function isRetweeted()
     {
         return $this->retweeted_id !== null;
     }
 
-    public function retweetedBy(User $user)
+    public function retweet(User $user, $body)
     {
-        $user ??= auth()->user();
-        return $this->retweets()
-            ->where('user_id', $user->id)
-            ->exists();
+        return (new Retweetable($this, $user, $body))->retweet();
     }
 }

@@ -75,22 +75,6 @@ class User extends Authenticatable
 
     public function retweet(Tweet $oldTweet, $body = null)
     {
-        //if user already retweet this tweet before ?
-        if ($oldTweet->retweetedBy($this)) {
-            $this->retweets()->detach($oldTweet);
-            Tweet::where('user_id', $this->id)
-                ->where('retweeted_id', $oldTweet->id)
-                ->delete();
-            return;
-        }
-
-        if ($oldTweet->isRetweet()) {
-            abort(403, 'This Tweet is retweeted cant be retweet again');
-        }
-
-        return tap(
-            $this->tweet($body, $oldTweet->id),
-            fn() => $this->retweets()->attach($oldTweet),
-        );
+        return $oldTweet->retweet($this, $body);
     }
 }
