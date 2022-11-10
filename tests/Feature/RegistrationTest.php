@@ -61,6 +61,7 @@ class RegistrationTest extends TestCase
         $this->assertNotNull($user->avatar);
         $this->assertEquals($payload['username'], $user->username);
         $this->assertEquals($payload['name'], $user->name);
+        $this->assertNotEquals($payload['password'], $user->password);
 
         $response->assertStatus(200);
         $this->assertEquals(

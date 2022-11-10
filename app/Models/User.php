@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -55,9 +56,9 @@ class User extends Authenticatable
         }
     }
 
-    public function password()
+    public function password(): Attribute
     {
-        return Attribute::make(set: fn($value) => encrypt($value));
+        return Attribute::make(null, set: fn($value) => Hash::make($value));
     }
 
     public function generateAvatar()
