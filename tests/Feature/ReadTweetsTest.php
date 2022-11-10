@@ -125,9 +125,21 @@ class ReadTweetsTest extends TestCase
         $this->assertTrue($retweetTweet['retweeted_by_user']);
     }
 
-    public function getTweets()
+    /** @test */
+    public function i_can_take_all_tweets_if_is_all_query_string_is_provided()
     {
-        return $this->get('/api/tweets')->collect('data');
+        $tweet = Tweet::factory()->create();
+        $tweets = $this->getTweets(['is_all' => 1]);
+
+        $this->assertTrue(
+            $tweets->contains(fn($tw) => $tw['id'] == $tweet->id),
+        );
+    }
+
+    public function getTweets($payload = [])
+    {
+        $query = http_build_query($payload);
+        return $this->getJson("/api/tweets?$query")->collect('data');
     }
 
     public function filterById($tweets, $id, $column = 'id')

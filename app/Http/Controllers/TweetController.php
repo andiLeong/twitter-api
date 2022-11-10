@@ -7,17 +7,18 @@ use Illuminate\Http\Request;
 
 class TweetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $usersIds = auth()
-            ->user()
-            ->follow->pluck('id')
-            ->merge([auth()->id()])
-            ->all();
-
         $res = tap(
             Tweet::query()
-                ->whereIn('user_id', $usersIds)
+                ->when(!$request->has('is_all'), function ($query) {
+                    $user = auth()->user();
+                    $usersIds = $user->follow
+                        ->pluck('id')
+                        ->merge([$user->id])
+                        ->all();
+                    $query->whereIn('user_id', $usersIds);
+                })
                 ->withCount(['likes', 'retweets'])
                 ->with(
                     'user:id,avatar,username,name',
