@@ -56,10 +56,12 @@ class TweetController extends Controller
 
     public function destroy(Tweet $tweet)
     {
-        if (auth()->id() !== $tweet->user_id) {
+        $loginUser = auth()->user();
+        if ($loginUser->id !== $tweet->user_id) {
             abort(403, 'Your dnt have permission');
         }
 
+        $loginUser->retweets()->detach($tweet->retweeted_id);
         $tweet->delete();
     }
 }
