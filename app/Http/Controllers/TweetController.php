@@ -48,7 +48,11 @@ class TweetController extends Controller
 
     public function show($id)
     {
-        return Tweet::with('user:id,avatar,username,name')
+        return Tweet::with(
+            'user:id,avatar,username,name',
+            'retweetedTweet:id,user_id,body',
+            'retweetedTweet.user:id,name,avatar',
+        )
             ->withCount('likes')
             ->where('id', $id)
             ->firstOrFail();
